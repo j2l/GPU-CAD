@@ -82,6 +82,12 @@ protected:
     std::vector<std::pair<VkShaderStageFlagBits, std::string> > shaderFilesone;
     std::vector<std::pair<VkShaderStageFlagBits, std::string> > shaderFilesoneread;
 
+    std::vector<std::pair<VkShaderStageFlagBits, std::string> > shaderFiles_grid_ulattice;
+    std::vector<std::pair<VkShaderStageFlagBits, std::string> > shaderFilesread_grid_ulattice;
+
+    std::vector<std::pair<VkShaderStageFlagBits, std::string> > shaderFiles_mesh_ulattice;
+    std::vector<std::pair<VkShaderStageFlagBits, std::string> > shaderFilesread_mesh_ulattice;
+
     std::vector<std::pair<VkShaderStageFlagBits, std::string> > shaderFilesinstance;
     std::vector<std::pair<VkShaderStageFlagBits, std::string> > shaderFilesinstanceread;
 
@@ -150,6 +156,7 @@ protected:
     virtual void getVertexDescriptions(std::vector<VkVertexInputBindingDescription>& bindingDesc, std::vector<VkVertexInputAttributeDescription>& attribDesc);
     virtual void getVertexDescriptionsone(std::vector<VkVertexInputBindingDescription>& bindingDesc, std::vector<VkVertexInputAttributeDescription>& attribDesc);
     virtual void getVertexDescriptions_instance(std::vector<VkVertexInputBindingDescription>& bindingDesc, std::vector<VkVertexInputAttributeDescription>& attribDesc);
+    virtual void getVertexDescriptions_u_lattice(std::vector<VkVertexInputBindingDescription>& bindingDesc, std::vector<VkVertexInputAttributeDescription>& attribDesc);
     virtual void getWaitFrameSemaphores(std::vector<VkSemaphore>& wait, std::vector< VkPipelineStageFlags>& waitStages) const;
     virtual void getSignalFrameSemaphores(std::vector<VkSemaphore>& signal) const;
     virtual VkDeviceSize getUniformSize() const;

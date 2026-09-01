@@ -3267,13 +3267,13 @@ void MarchingCubeCuda::classifyVoxel_lattice_new(dim3 grid, dim3 threads, uint *
 
 
 __device__
-float3  vertexInterp3_new(float isolevel,float isolevelone,float isoleveltwo, float3 p0, float3 p1, float f0, float f1,float f2, float f3, float iso1, float iso2,float f_id0, float f_id1)
+float3  vertexInterp3_new(float isolevel,float isolevelone,float isoleveltwo, float3 p0, float3 p1, float f0, float f1,float f2, float f3, float iso1, float iso2,float f_id0, float f_id1, float *col)
 {
     
     
     float t ;// = 0.0;
 
-  
+    *col = f0;
 
     if (((f_id0  == 1) && (f_id1 == 0)) || ((f_id0  == 0) && (f_id1 == 1)))
     {
@@ -3467,6 +3467,9 @@ generateTriangles_lattice_kernel_new(float4 *pos, float4 *norm, uint *compactedV
         field_id[6] = sampleVolume(volume, gridPos + make_uint3(1, 1, 1), gridSize);
         field_id[7] = sampleVolume(volume, gridPos + make_uint3(0, 1, 1), gridSize);
 
+
+        float color[12];
+
         float isoVal = isoValue; 
         
         uint cubeindex;
@@ -3503,18 +3506,18 @@ generateTriangles_lattice_kernel_new(float4 *pos, float4 *norm, uint *compactedV
 
 
         __shared__ float3 vertlist[12*NTHREADS];
-        vertlist[threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[0], v[1], field_1[0], field_1[1],field_2[0], field_2[1],iso1,iso2,field_id[0], field_id[1]);
-        vertlist[NTHREADS+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[1], v[2], field_1[1], field_1[2],field_2[1], field_2[2],iso1,iso2,field_id[1], field_id[2]);
-        vertlist[(NTHREADS*2)+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[2], v[3], field_1[2], field_1[3],field_2[2], field_2[3],iso1,iso2,field_id[2], field_id[3]);
-        vertlist[(NTHREADS*3)+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[3], v[0], field_1[3], field_1[0],field_2[3], field_2[0],iso1,iso2,field_id[3], field_id[0]);
-        vertlist[(NTHREADS*4)+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[4], v[5], field_1[4], field_1[5],field_2[4], field_2[5],iso1,iso2,field_id[4], field_id[5]);
-        vertlist[(NTHREADS*5)+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[5], v[6], field_1[5], field_1[6],field_2[5], field_2[6],iso1,iso2,field_id[5], field_id[6]);
-        vertlist[(NTHREADS*6)+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[6], v[7], field_1[6], field_1[7],field_2[6], field_2[7],iso1,iso2,field_id[6], field_id[7]);
-        vertlist[(NTHREADS*7)+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[7], v[4], field_1[7], field_1[4],field_2[7], field_2[4],iso1,iso2,field_id[7], field_id[4]);
-        vertlist[(NTHREADS*8)+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[0], v[4], field_1[0], field_1[4],field_2[0], field_2[4],iso1,iso2,field_id[0], field_id[4]);
-        vertlist[(NTHREADS*9)+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[1], v[5], field_1[1], field_1[5],field_2[1], field_2[5],iso1,iso2,field_id[1], field_id[5]);
-        vertlist[(NTHREADS*10)+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[2], v[6], field_1[2], field_1[6],field_2[2], field_2[6],iso1,iso2,field_id[2], field_id[6]);
-        vertlist[(NTHREADS*11)+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[3], v[7], field_1[3], field_1[7],field_2[3], field_2[7],iso1,iso2,field_id[3], field_id[7]);
+        vertlist[threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[0], v[1], field_1[0], field_1[1],field_2[0], field_2[1],iso1,iso2,field_id[0], field_id[1],&color[0]);
+        vertlist[NTHREADS+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[1], v[2], field_1[1], field_1[2],field_2[1], field_2[2],iso1,iso2,field_id[1], field_id[2],&color[1]);
+        vertlist[(NTHREADS*2)+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[2], v[3], field_1[2], field_1[3],field_2[2], field_2[3],iso1,iso2,field_id[2], field_id[3],&color[2]);
+        vertlist[(NTHREADS*3)+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[3], v[0], field_1[3], field_1[0],field_2[3], field_2[0],iso1,iso2,field_id[3], field_id[0],&color[3]);
+        vertlist[(NTHREADS*4)+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[4], v[5], field_1[4], field_1[5],field_2[4], field_2[5],iso1,iso2,field_id[4], field_id[5],&color[4]);
+        vertlist[(NTHREADS*5)+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[5], v[6], field_1[5], field_1[6],field_2[5], field_2[6],iso1,iso2,field_id[5], field_id[6],&color[5]);
+        vertlist[(NTHREADS*6)+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[6], v[7], field_1[6], field_1[7],field_2[6], field_2[7],iso1,iso2,field_id[6], field_id[7],&color[6]);
+        vertlist[(NTHREADS*7)+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[7], v[4], field_1[7], field_1[4],field_2[7], field_2[4],iso1,iso2,field_id[7], field_id[4],&color[7]);
+        vertlist[(NTHREADS*8)+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[0], v[4], field_1[0], field_1[4],field_2[0], field_2[4],iso1,iso2,field_id[0], field_id[4],&color[8]);
+        vertlist[(NTHREADS*9)+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[1], v[5], field_1[1], field_1[5],field_2[1], field_2[5],iso1,iso2,field_id[1], field_id[5],&color[9]);
+        vertlist[(NTHREADS*10)+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[2], v[6], field_1[2], field_1[6],field_2[2], field_2[6],iso1,iso2,field_id[2], field_id[6],&color[10]);
+        vertlist[(NTHREADS*11)+threadIdx.x] = vertexInterp3_new(isoValue,isoValue1,isoValue2, v[3], v[7], field_1[3], field_1[7],field_2[3], field_2[7],iso1,iso2,field_id[3], field_id[7],&color[11]);
         
 
 
@@ -3528,20 +3531,26 @@ generateTriangles_lattice_kernel_new(float4 *pos, float4 *norm, uint *compactedV
             
             float3 *v[3];
 
+            float coll[3];
+
             uint edge;
 
             edge = tex1Dfetch<uint>(triTex, (cubeindex*16) + j);
 
+            coll[0] = color[edge];
             
             v[0] = &vertlist[(edge*NTHREADS)+threadIdx.x];
 
             edge = tex1Dfetch<uint>(triTex, (cubeindex*16) + j + 1);
 
-            
+            coll[1] = color[edge];
+
             v[1] = &vertlist[(edge*NTHREADS)+threadIdx.x];
             
 
             edge = tex1Dfetch<uint>(triTex, (cubeindex*16) + j + 2);
+
+            coll[2] = color[edge];
             
             v[2] = &vertlist[(edge*NTHREADS)+threadIdx.x];
             
@@ -3552,13 +3561,13 @@ generateTriangles_lattice_kernel_new(float4 *pos, float4 *norm, uint *compactedV
             {
         
                 pos[index] = make_float4(*v[0], 1.0f);
-                norm[index] = make_float4(n, 0.0f);
+                norm[index] = make_float4(n, coll[0]);
 
                 pos[index+1] = make_float4(*v[1], 1.0f);
-                norm[index+1] = make_float4(n, 0.0f);
+                norm[index+1] = make_float4(n, coll[1]);
 
                 pos[index+2] = make_float4(*v[2], 1.0f);
-                norm[index+2] = make_float4(n, 0.0f);    
+                norm[index+2] = make_float4(n, coll[2]);    
             
             }
         }
@@ -3591,13 +3600,13 @@ void MarchingCubeCuda::generateTriangles_lattice_new(dim3 grid, dim3 threads,
 
 
 __device__
-float3  vertexInterp2_new(float isolevelone,float isoleveltwo, float3 p0, float3 p1, float f0, float f1,float f_id0, float f_id1)
+float3  vertexInterp2_new(float isolevelone,float isoleveltwo, float3 p0, float3 p1, float f0, float f1,float f_id0, float f_id1, float *col)
 {
     
     
     float t ;// = 0.0;
 
-  
+    *col = f0;
 
     if (((f_id0  == 1) && (f_id1 == 0)) || ((f_id0  == 0) && (f_id1 == 1)))
     {
@@ -3618,43 +3627,18 @@ float3  vertexInterp2_new(float isolevelone,float isoleveltwo, float3 p0, float3
         
         
         
-        if((f1 >= isolevelone) && (f0 <= isolevelone))
+        if((f1 >= isolevelone) && (f0 < isolevelone))
         {
-            if (fabs(isolevelone-f0) < 0.0005)
-            {
-                return(p0);
-            }
-            if (fabs(isolevelone-f1) < 0.0005)
-            {
-                return(p1);
-            }
-            if (fabs(f1-f0) < 0.0005)
-            {
-                return(p0);
-            }
+
 
             t = (isolevelone - f0) / (f1 - f0);
         }
 
 
 
-        else if((f1 >= isoleveltwo) && (f0 <= isoleveltwo))
+        else if((f1 >= isoleveltwo) && (f0 < isoleveltwo))
         {
         
-
-            if (fabs(isoleveltwo -f0) < 0.0005)
-            {
-                return(p0);
-            }
-            if (fabs(isoleveltwo -f1) < 0.0005)
-            {
-                return(p1);
-            }
-            if (fabs(f1-f0) < 0.0005)
-            {
-                return(p0);
-            }
-
             t = (isoleveltwo - f0) / (f1 - f0);
         }
 
@@ -3696,12 +3680,15 @@ generateTriangles_lattice_kernel_newone(float4 *pos, float4 *norm, uint *compact
         uint3 gridPos = calcGridPos(voxel, gridSizeShift, gridSizeMask);
 
         float3 p;
+   
+        float3 v[8];
+        
+        float color[12];
 
         p.x = (gridPos.x - gridcenter.x) *voxelSize.x ;
         p.y = (gridPos.y - gridcenter.y) *voxelSize.y ;
         p.z = (gridPos.z - gridcenter.z) *voxelSize.z ;
-        
-        float3 v[8];
+
         v[0] = p;
         v[1] = p + make_float3(voxelSize.x, 0, 0);
         v[2] = p + make_float3(voxelSize.x, voxelSize.y, 0);
@@ -3748,18 +3735,18 @@ generateTriangles_lattice_kernel_newone(float4 *pos, float4 *norm, uint *compact
 
   
         __shared__ float3 vertlist[12*NTHREADS];
-        vertlist[threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[0], v[1], field_1[0], field_1[1],field_id[0], field_id[1]);
-        vertlist[NTHREADS+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[1], v[2], field_1[1], field_1[2],field_id[1], field_id[2]);
-        vertlist[(NTHREADS*2)+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[2], v[3], field_1[2], field_1[3],field_id[2], field_id[3]);
-        vertlist[(NTHREADS*3)+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[3], v[0], field_1[3], field_1[0],field_id[3], field_id[0]);
-        vertlist[(NTHREADS*4)+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[4], v[5], field_1[4], field_1[5],field_id[4], field_id[5]);
-        vertlist[(NTHREADS*5)+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[5], v[6], field_1[5], field_1[6],field_id[5], field_id[6]);
-        vertlist[(NTHREADS*6)+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[6], v[7], field_1[6], field_1[7],field_id[6], field_id[7]);
-        vertlist[(NTHREADS*7)+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[7], v[4], field_1[7], field_1[4],field_id[7], field_id[4]);
-        vertlist[(NTHREADS*8)+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[0], v[4], field_1[0], field_1[4],field_id[0], field_id[4]);
-        vertlist[(NTHREADS*9)+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[1], v[5], field_1[1], field_1[5],field_id[1], field_id[5]);
-        vertlist[(NTHREADS*10)+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[2], v[6], field_1[2], field_1[6],field_id[2], field_id[6]);
-        vertlist[(NTHREADS*11)+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[3], v[7], field_1[3], field_1[7],field_id[3], field_id[7]);
+        vertlist[threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[0], v[1], field_1[0], field_1[1],field_id[0], field_id[1],&color[0]);
+        vertlist[NTHREADS+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[1], v[2], field_1[1], field_1[2],field_id[1], field_id[2], &color[1]);
+        vertlist[(NTHREADS*2)+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[2], v[3], field_1[2], field_1[3],field_id[2], field_id[3], &color[2]);
+        vertlist[(NTHREADS*3)+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[3], v[0], field_1[3], field_1[0],field_id[3], field_id[0], &color[3]);
+        vertlist[(NTHREADS*4)+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[4], v[5], field_1[4], field_1[5],field_id[4], field_id[5], &color[4]);
+        vertlist[(NTHREADS*5)+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[5], v[6], field_1[5], field_1[6],field_id[5], field_id[6], &color[5]);
+        vertlist[(NTHREADS*6)+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[6], v[7], field_1[6], field_1[7],field_id[6], field_id[7], &color[6]);
+        vertlist[(NTHREADS*7)+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[7], v[4], field_1[7], field_1[4],field_id[7], field_id[4], &color[7]);
+        vertlist[(NTHREADS*8)+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[0], v[4], field_1[0], field_1[4],field_id[0], field_id[4], &color[8]);
+        vertlist[(NTHREADS*9)+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[1], v[5], field_1[1], field_1[5],field_id[1], field_id[5], &color[9]);
+        vertlist[(NTHREADS*10)+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[2], v[6], field_1[2], field_1[6],field_id[2], field_id[6], &color[10]);
+        vertlist[(NTHREADS*11)+threadIdx.x] = vertexInterp2_new(isoValue1,isoValue2, v[3], v[7], field_1[3], field_1[7],field_id[3], field_id[7], &color[11]);
         
 
 
@@ -3772,21 +3759,27 @@ generateTriangles_lattice_kernel_newone(float4 *pos, float4 *norm, uint *compact
             index = numVertsScanned[voxel] + j;
           
             float3 *v[3];
+            float col[3];
 
             uint edge;
 
             edge = tex1Dfetch<uint>(triTex, (cubeindex*16) + j);
+
+            col[0] = color[edge];
 
             
             v[0] = &vertlist[(edge*NTHREADS)+threadIdx.x];
 
             edge = tex1Dfetch<uint>(triTex, (cubeindex*16) + j + 1);
 
-            
+            col[1] = color[edge];
+
             v[1] = &vertlist[(edge*NTHREADS)+threadIdx.x];
             
 
             edge = tex1Dfetch<uint>(triTex, (cubeindex*16) + j + 2);
+
+            col[2] = color[edge];
             
             v[2] = &vertlist[(edge*NTHREADS)+threadIdx.x];
           
@@ -3798,13 +3791,13 @@ generateTriangles_lattice_kernel_newone(float4 *pos, float4 *norm, uint *compact
             {
                 
                 pos[index] = make_float4(*v[0], 1.0f);
-                norm[index] = make_float4(n, 0.0f);
+                norm[index] = make_float4(n, col[0]);
 
                 pos[index+1] = make_float4(*v[1], 1.0f);
-                norm[index+1] = make_float4(n, 0.0f);
+                norm[index+1] = make_float4(n, col[1]);
 
                 pos[index+2] = make_float4(*v[2], 1.0f);
-                norm[index+2] = make_float4(n, 0.0f);    
+                norm[index+2] = make_float4(n, col[2]);    
              
             
             }

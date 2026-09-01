@@ -37,6 +37,7 @@ struct LightPushConstants
     int show_domain;
     int show_analysis;
     int2 mouse_delta;
+    int mesh_color;
    
 
 } ;

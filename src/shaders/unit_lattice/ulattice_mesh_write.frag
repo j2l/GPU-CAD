@@ -1,0 +1,35 @@
+
+
+#version 450
+#extension GL_ARB_separate_shader_objects : enable
+
+layout(location = 0) in vec4 fragColor;
+
+layout( push_constant, std430) uniform push_constants
+{
+        vec4 eyes;
+        float p_size_1;
+        float p_size_2;
+        float p_size_3;
+        float p_size_4;
+        float mouse_x;
+        float mouse_y;
+        int mouse_click;
+        float pix_delta;
+        int support;
+        float point_size;
+        int boundary;
+        float alpha_val;
+        int make_region;
+} ;
+
+layout(location = 0) out vec4 outColor;
+
+
+
+void main() {
+     
+        outColor = vec4(0.0,0.0,1.0,1.0);
+}
+    
+    

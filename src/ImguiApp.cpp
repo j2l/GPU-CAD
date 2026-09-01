@@ -252,7 +252,7 @@ ImVec2 ImguiApp::window_extent = {50,50};
 ImVec4 ImguiApp::clear_color = ImVec4(0.148f, 0.148f, 0.148f, 1.00f);
 
 
-LightPushConstants ImguiApp::push_constants = {{0.0f,0.0f,0.0f,0.0f},0.0f,0.0f,0.0f,2.0f,0.0f,0.0f,0,2.0,0,1,0,1.0,0,0,0,0,{0,0}};
+LightPushConstants ImguiApp::push_constants = {{0.0f,0.0f,0.0f,0.0f},0.0f,0.0f,0.0f,2.0f,0.0f,0.0f,0,2.0,0,1,0,1.0,0,0,0,0,{0,0},0};
 
 InstancePushConstants ImguiApp::Inst_push_constants = {{0.0f,0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f,0.0f}, {0.0f,1.0f,0.0f,0.0f},
 {1.0f,1.0f,1.0f,1.0f}, {1.0f,1.0f,1.0f,1.0f},{0,0}};
@@ -1502,6 +1502,27 @@ void ImguiApp::show_view_settings(bool *view_setting, bool *shift, bool *reset, 
 
 
     ImGui::Checkbox("Show 3D Mesh", show_mesh);
+
+    ImGui::NewLine();
+    ImGui::NewLine();
+
+    
+    static float f1_1 = 0.0f;
+    ImGui::SliderFloat("Point Size1", &f1_1, 0.0f, 10.0f, "%.0f");
+    static float f1_2 = 0.0f;
+    ImGui::SliderFloat("Point Size2", &f1_2, 0.0f, 10.0f, "%.0f");
+    static float f1_3 = 0.0f;
+    ImGui::SliderFloat("Point Size3", &f1_3, 0.0f, 10.0f, "%.0f");
+    static float f1_4 = 1.0;
+    ImGui::SliderFloat("Point Size4", &f1_4, 0.0f, 15.0f, "%.0f");
+
+  
+
+    ImguiApp::push_constants.p_size_1 = f1_1;
+    ImguiApp::push_constants.p_size_2 = f1_2;
+    ImguiApp::push_constants.p_size_3 = f1_3;
+    ImguiApp::push_constants.p_size_4 = f1_4;
+    
 
     ImGui::End();
 }

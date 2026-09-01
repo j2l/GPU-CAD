@@ -729,6 +729,57 @@ class Multitopo : public VulkanBaseApp, Modelling
         shaderFilesinstanceread.push_back(std::make_pair(VK_SHADER_STAGE_GEOMETRY_BIT, read_instance_geometry_shader_path));
         shaderFilesinstanceread.push_back(std::make_pair(VK_SHADER_STAGE_FRAGMENT_BIT, read_instance_fragment_shader_path));
 
+        char gone[] = "../src/shaders/unit_lattice/ulattice_grid_write.vert.spv";
+        char gtwo[] = "../src/shaders/unit_lattice/ulattice_grid_write.geom.spv";
+        char gthree[]="../src/shaders/unit_lattice/ulattice_grid_write.frag.spv";
+        
+        char * lattice_write_vertex_shader_path = &gone[0];
+        char * lattice_write_geometry_shader_path = &gtwo[0];
+        char * lattice_write_fragment_shader_path = &gthree[0];
+    
+        shaderFiles_grid_ulattice.push_back(std::make_pair(VK_SHADER_STAGE_VERTEX_BIT, lattice_write_vertex_shader_path));
+        shaderFiles_grid_ulattice.push_back(std::make_pair(VK_SHADER_STAGE_GEOMETRY_BIT, lattice_write_geometry_shader_path));
+        shaderFiles_grid_ulattice.push_back(std::make_pair(VK_SHADER_STAGE_FRAGMENT_BIT, lattice_write_fragment_shader_path));
+
+
+        char hone[] = "../src/shaders/unit_lattice/ulattice_grid_read.vert.spv";
+        char htwo[]="../src/shaders/unit_lattice/ulattice_grid_read.geom.spv";
+        char hthree[]="../src/shaders/unit_lattice/ulattice_grid_read.frag.spv";
+        
+        char * lattice_read_vertex_shader_path = &hone[0];
+        char * lattice_read_geometry_shader_path = &htwo[0];
+        char * lattice_read_fragment_shader_path = &hthree[0];
+        
+        shaderFilesread_grid_ulattice.push_back(std::make_pair(VK_SHADER_STAGE_VERTEX_BIT, lattice_read_vertex_shader_path));
+        shaderFilesread_grid_ulattice.push_back(std::make_pair(VK_SHADER_STAGE_GEOMETRY_BIT, lattice_read_geometry_shader_path));
+        shaderFilesread_grid_ulattice.push_back(std::make_pair(VK_SHADER_STAGE_FRAGMENT_BIT, lattice_read_fragment_shader_path));
+
+
+        char ione[] = "../src/shaders/unit_lattice/ulattice_mesh_write.vert.spv";
+        char itwo[]="../src/shaders/unit_lattice/ulattice_mesh_write.geom.spv";
+        char ithree[]="../src/shaders/unit_lattice/ulattice_mesh_write.frag.spv";
+        
+        char * lattice_write_bmesh_vertex_shader_path = &ione[0];
+        char * lattice_write_bmesh_geometry_shader_path = &itwo[0];
+        char * lattice_write_bmesh_fragment_shader_path = &ithree[0];
+        
+        shaderFiles_mesh_ulattice.push_back(std::make_pair(VK_SHADER_STAGE_VERTEX_BIT, lattice_write_bmesh_vertex_shader_path));
+        shaderFiles_mesh_ulattice.push_back(std::make_pair(VK_SHADER_STAGE_GEOMETRY_BIT, lattice_write_bmesh_geometry_shader_path));
+        shaderFiles_mesh_ulattice.push_back(std::make_pair(VK_SHADER_STAGE_FRAGMENT_BIT, lattice_write_bmesh_fragment_shader_path));
+
+        char jone[] = "../src/shaders/unit_lattice/ulattice_mesh_read.vert.spv";
+        char jtwo[]="../src/shaders/unit_lattice/ulattice_mesh_read.geom.spv";
+        char jthree[]="../src/shaders/unit_lattice/ulattice_mesh_read.frag.spv";
+        
+        char * lattice_read_bmesh_vertex_shader_path = &jone[0];
+        char * lattice_read_bmesh_geometry_shader_path = &jtwo[0];
+        char * lattice_read_bmesh_fragment_shader_path = &jthree[0];
+        
+        shaderFilesread_mesh_ulattice.push_back(std::make_pair(VK_SHADER_STAGE_VERTEX_BIT, lattice_read_bmesh_vertex_shader_path));
+        shaderFilesread_mesh_ulattice.push_back(std::make_pair(VK_SHADER_STAGE_GEOMETRY_BIT, lattice_read_bmesh_geometry_shader_path));
+        shaderFilesread_mesh_ulattice.push_back(std::make_pair(VK_SHADER_STAGE_FRAGMENT_BIT, lattice_read_bmesh_fragment_shader_path));
+
+    
     }
 
 
@@ -870,7 +921,7 @@ class Multitopo : public VulkanBaseApp, Modelling
             vkFreeMemory(device, v_volumeMemory_t, nullptr);
         }
 
-        if (v_raster != VK_NULL_HANDLE) {
+        if (v_rasterMemory != VK_NULL_HANDLE) {
             vkFreeMemory(device, v_rasterMemory, nullptr);
         }
 
@@ -1061,6 +1112,30 @@ class Multitopo : public VulkanBaseApp, Modelling
         attribDesc[2].offset = 0;
 
     }
+
+    void getVertexDescriptions_u_lattice(std::vector<VkVertexInputBindingDescription>& bindingDesc, std::vector<VkVertexInputAttributeDescription>& attribDesc) {
+        bindingDesc.resize(2);
+        attribDesc.resize(2);
+
+        bindingDesc[0].binding = 0;
+        bindingDesc[0].stride = sizeof(REAL);
+        bindingDesc[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+        bindingDesc[1].binding = 1;
+        bindingDesc[1].stride = sizeof(vec3);
+        bindingDesc[1].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+        attribDesc[0].binding = 0;
+        attribDesc[0].location = 0;
+        attribDesc[0].format = VK_FORMAT_R32_SFLOAT;
+        attribDesc[0].offset = 0;
+
+        attribDesc[1].binding = 1;
+        attribDesc[1].location = 1;
+        attribDesc[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attribDesc[1].offset = 0;
+
+    }
   
     void getVertexDescriptionsone(std::vector<VkVertexInputBindingDescription>& bindingDesc, std::vector<VkVertexInputAttributeDescription>& attribDesc) {
         bindingDesc.resize(3);
@@ -1094,6 +1169,7 @@ class Multitopo : public VulkanBaseApp, Modelling
         attribDesc[2].offset = 0;
 
     }
+
 
     void getVertexDescriptions_instance(std::vector<VkVertexInputBindingDescription>& bindingDesc, std::vector<VkVertexInputAttributeDescription>& attribDesc) 
     {
@@ -1281,7 +1357,9 @@ class Multitopo : public VulkanBaseApp, Modelling
 
     void fillRenderingCommandBuffer_unit_lattice(VkCommandBuffer& commandBuffer)
     {
-        VkBuffer vertexBuffers[] = { latticeonevol,v_xyzlatticeBuffer,v_raster};
+        
+ 
+        VkBuffer vertexBuffers[] = { latticeonevol,v_xyzlatticeBuffer};
 
         VkDeviceSize offsets[] = { 0, 0};
 
@@ -1296,7 +1374,9 @@ class Multitopo : public VulkanBaseApp, Modelling
 
     void fillRenderingCommandBuffer_unit_lattice_subpass1(VkCommandBuffer& commandBuffer)
     {
-        VkBuffer vertexBuffers[] = { latticeonevol,v_xyzlatticeBuffer,v_raster};
+        
+
+        VkBuffer vertexBuffers[] = { latticeonevol,v_xyzlatticeBuffer};
 
         VkDeviceSize offsets[] = { 0, 0};
 
@@ -1313,13 +1393,13 @@ class Multitopo : public VulkanBaseApp, Modelling
 
    void fillRenderingCommandBuffer_spatial_lattice(VkCommandBuffer& commandBuffer)
     {
-        VkBuffer vertexBuffers[] = { latticethreevol,v_xyzBufferthree, v_raster };
+        VkBuffer vertexBuffers[] = { latticethreevol,v_xyzBufferthree, v_volume_twice};
 
-        VkDeviceSize offsets[] = { 0, 0};
+        VkDeviceSize offsets[] = { 0, 0, 0};
 
         vkCmdPushConstants(commandBuffer,pipelineLayout,VK_SHADER_STAGE_GEOMETRY_BIT | VK_SHADER_STAGE_FRAGMENT_BIT ,0,sizeof(ImguiApp::push_constants),&push_constants);
 
-        vkCmdBindVertexBuffers(commandBuffer, 0, 2, vertexBuffers, offsets);
+        vkCmdBindVertexBuffers(commandBuffer, 0, 3, vertexBuffers, offsets);
 
         vkCmdBindIndexBuffer(commandBuffer, v_indexBufferthree, 0, VK_INDEX_TYPE_UINT32);
 
@@ -1328,13 +1408,13 @@ class Multitopo : public VulkanBaseApp, Modelling
 
     void fillRenderingCommandBuffer_spatial_lattice_subpass1(VkCommandBuffer& commandBuffer)
     {
-        VkBuffer vertexBuffers[] = { latticethreevol,v_xyzBufferthree, v_raster};
+        VkBuffer vertexBuffers[] = { latticethreevol,v_xyzBufferthree,v_volume_twice};
 
-        VkDeviceSize offsets[] = { 0, 0};
+        VkDeviceSize offsets[] = { 0, 0, 0};
 
         vkCmdPushConstants(commandBuffer,pipelineLayoutread,VK_SHADER_STAGE_GEOMETRY_BIT | VK_SHADER_STAGE_FRAGMENT_BIT ,0,sizeof(ImguiApp::push_constants),&push_constants);
 
-        vkCmdBindVertexBuffers(commandBuffer, 0, 2, vertexBuffers, offsets);
+        vkCmdBindVertexBuffers(commandBuffer, 0, 3, vertexBuffers, offsets);
 
         vkCmdBindIndexBuffer(commandBuffer, v_indexBufferthree, 0, VK_INDEX_TYPE_UINT32);
 
@@ -1753,238 +1833,266 @@ class Multitopo : public VulkanBaseApp, Modelling
 
         }
 
+        if(ImguiApp::lattice)
+        {
+            VulkanBaseApp::push_constants.mesh_color = 1;
+        }
+        else
+        {
+            VulkanBaseApp::push_constants.mesh_color = 0;
+        }
+
     }
 
 
     void updateUniformBuffer(uint32_t imageIndex, bool shift) {
+        
+
+        if((ImguiApp::mouse_wheel != 0))
         {
+            ImguiApp::zoom_value +=  ((ImguiApp::mouse_wheel)) * 0.2;
+            
+            dist2 = 2 + max(0.01,min(1000.0f, (MAX(NumZ,MAX(NumX,NumY))) * (ImguiApp::zoom_value) ));
+            distone = 2 + max(0.01,min(1000.0f,(MAX(Nxu,MAX(Nyu,Nzu))) * (ImguiApp::zoom_value) ));
+        }
 
-            if((ImguiApp::mouse_wheel != 0))
-            {
-                ImguiApp::zoom_value +=  ((ImguiApp::mouse_wheel)) * 0.2;
+        if(ImGui::IsKeyDown(ImGuiKey_Z) && (ImGui::IsMouseClicked(ImGuiMouseButton_Middle)))
+        {
+            dist2 = (MAX(NumZ,MAX(NumX,NumY)));
+            distone = (MAX(Nxu,MAX(Nyu,Nzu))) ;
+            ImguiApp::zoom_value = 1.0f;
+            ImguiApp::mouse_wheel = 0.0f;
+        }
+
+
+        vec3 eye;
+        vec3 center;
+        vec3 up ;
+        vec4 light_dir;
+        
+        center[0] = 0.0f;
+        center[1] = 0.0f;
+        center[2] = 0.0f;
+
+        up[0] = 0.0f;
+        up[1] = 1.0f;
+        up[2] = 0.0f;
+        
+
+        mat4x4 traform[1], view[1], view_tran[1], proj[1];
+        
+        if(show_unit_lattice_data && (ImguiApp::lattice || ImguiApp::show_topo_lattice))
+        {
                 
-                dist2 = 2 + max(0.01,min(1000.0f, (MAX(NumZ,MAX(NumX,NumY))) * (ImguiApp::zoom_value) ));
-                distone = 2 + max(0.01,min(1000.0f,(MAX(Nxu,MAX(Nyu,Nzu))) * (ImguiApp::zoom_value) ));
-            }
+            eye[0] = 0.0f;
+            eye[1] = 0.0f;
+            eye[2] = (distone*1.2);
 
-            if(ImGui::IsKeyDown(ImGuiKey_Z) && (ImGui::IsMouseClicked(ImGuiMouseButton_Middle)))
+            if(ImGui::IsKeyDown(ImGuiKey_LeftShift))
             {
-                dist2 = (MAX(NumZ,MAX(NumX,NumY)));
-                distone = (MAX(Nxu,MAX(Nyu,Nzu))) ;
-                ImguiApp::zoom_value = 1.0f;
-                ImguiApp::mouse_wheel = 0.0f;
-            }
-
-
-            vec3 eye;
-            vec3 center;
-            vec3 up ;
-            vec4 light_dir;
-            
-            center[0] = 0.0f;
-            center[1] = 0.0f;
-            center[2] = 0.0f;
-
-            up[0] = 0.0f;
-            up[1] = 1.0f;
-            up[2] = 0.0f;
-            
-
-            mat4x4 traform[1], view[1], view_tran[1], proj[1];
-            
-            if(show_unit_lattice_data && (ImguiApp::lattice || ImguiApp::show_topo_lattice))
-            {
-                    
-                eye[0] = 0.0f;
-                eye[1] = 0.0f;
-                eye[2] = (distone*1.2);
-
-                if(ImGui::IsKeyDown(ImGuiKey_LeftShift))
+                ImguiApp::mouse_view = true;
+                ImguiApp::view_settings = false;
+                ImguiApp::view_3dcam = false;
+                
+                if((ImGui::IsMouseDown(ImGuiMouseButton_Left)))
                 {
-                    ImguiApp::mouse_view = true;
-                    ImguiApp::view_settings = false;
-                    ImguiApp::view_3dcam = false;
-                    
-                    if((ImGui::IsMouseDown(ImGuiMouseButton_Left)))
-                    {
-                        ImVec2 delta_mouse = ImGui::GetMouseDragDelta(0) ;
-                        int x_val = ImguiApp::mouse_rot.x + delta_mouse.y;
-                        int y_val = ImguiApp::mouse_rot.y + delta_mouse.x;
-                        ImguiApp::camera_rot.x = (x_val) * 0.001f;
-                        ImguiApp::camera_rot.y = (y_val) * 0.001f;
+                    ImVec2 delta_mouse = ImGui::GetMouseDragDelta(0) ;
+                    int x_val = ImguiApp::mouse_rot.x + delta_mouse.y;
+                    int y_val = ImguiApp::mouse_rot.y + delta_mouse.x;
+                    ImguiApp::camera_rot.x = (x_val) * 0.001f;
+                    ImguiApp::camera_rot.y = (y_val) * 0.001f;
 
-                    }
-                    else if(ImGui::IsMouseReleased(ImGuiMouseButton_Left))
-                    {
+                }
+                else if(ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+                {
+                
                     
-                        
-                        ImguiApp::mouse_rot.x = ImguiApp::camera_rot.x * 1000.0f;
-                        ImguiApp::mouse_rot.y = ImguiApp::camera_rot.y * 1000.0f;
-                        
-                    }
+                    ImguiApp::mouse_rot.x = ImguiApp::camera_rot.x * 1000.0f;
+                    ImguiApp::mouse_rot.y = ImguiApp::camera_rot.y * 1000.0f;
+                    
+                }
 
               
 
-                }
+            }
 
-                if(!ImguiApp::mouse_view)
-                {
-                    
-                    if(VulkanBaseApp::shift)
-                    {
-                        Camera_settings::rotate_plane(angle,ImguiApp::view_type,&ImguiApp::camera_rot);
-
-                        angle += ImguiApp::increment_angle;
-
-                        if((view_type == 5) || (view_type == 6))
-                        {
-                            eye[0] = distone * 1.2f;
-                            eye[1] = 0.0f;
-                            eye[2] = 0.0f;
-                        }
-                    }
-                    else
-                    {
-                        if(ImguiApp::view_type != 0)
-                        {
-                            Camera_settings::camera_view(&ImguiApp::camera_rot,ImguiApp::view_type);
-                        }
-                    }
-
-                }
-
-                float3 translate = {(Nxu - 1)/2.0f,(Nyu - 1)/2.0f,(Nzu - 1)/2.0f}; 
-                Camera_settings::set_ZYX_pos(traform[0],translate,ImguiApp::camera_rot);
+            if(!ImguiApp::mouse_view)
+            {
                 
-            }
-
-            else
-            {
-                show_unit_lattice_data = false;
-                
-                eye[0] = 0.0f;
-                eye[1] = 0.0f;
-                eye[2] = (dist2*1.2);
-               
-                if(ImGui::IsKeyDown(ImGuiKey_LeftShift))
+                if(VulkanBaseApp::shift)
                 {
-                    ImguiApp::mouse_view = true;
-                    ImguiApp::view_settings = false;
-                    ImguiApp::view_3dcam = false;
-                    
-                    if((ImGui::IsMouseDown(ImGuiMouseButton_Left)))
-                    {
-                        ImVec2 delta_mouse = ImGui::GetMouseDragDelta(0) ;
-                        int x_val = ImguiApp::mouse_rot.x + delta_mouse.y;
-                        int y_val = ImguiApp::mouse_rot.y + delta_mouse.x;
-                        ImguiApp::camera_rot.x = (x_val) * 0.001f;
-                        ImguiApp::camera_rot.y = (y_val) * 0.001f;
+                    Camera_settings::rotate_plane(angle,ImguiApp::view_type,&ImguiApp::camera_rot);
 
-                    }
-                    else if(ImGui::IsMouseReleased(ImGuiMouseButton_Left))
-                    {
-                    
-                        ImguiApp::mouse_rot.x = ImguiApp::camera_rot.x * 1000.0f;
-                        ImguiApp::mouse_rot.y = ImguiApp::camera_rot.y * 1000.0f;
-                        
-                    }
+                    angle += ImguiApp::increment_angle;
 
+                    if((view_type == 5) || (view_type == 6))
+                    {
+                        eye[0] = distone * 1.2f;
+                        eye[1] = 0.0f;
+                        eye[2] = 0.0f;
+                    }
+                }
+                else
+                {
+                    if(ImguiApp::view_type != 0)
+                    {
+                        Camera_settings::camera_view(&ImguiApp::camera_rot,ImguiApp::view_type);
+                    }
                 }
 
-                if(!ImguiApp::mouse_view)
-                {
-                    
-                    if(VulkanBaseApp::shift)
-                    {
-                        Camera_settings::rotate_plane(angle,ImguiApp::view_type,&ImguiApp::camera_rot);
-
-                        angle += ImguiApp::increment_angle;
-
-                        if((view_type == 5) || (view_type == 6))
-                        {
-                            eye[0] = dist2 * 1.2f;
-                            eye[1] = 0.0f;
-                            eye[2] = 0.0f;
-                        }
-                    }
-                    else
-                    {
-                        if(ImguiApp::view_type != 0)
-                        {
-                            Camera_settings::camera_view(&ImguiApp::camera_rot,ImguiApp::view_type);
-                        }
-                    }
-
-                }
-
-                float3 translate = {(NumX - 1)/2.0f,(NumY - 1)/2.0f,(NumZ - 1)/2.0f}; 
-
-                Camera_settings::set_ZYX_pos(traform[0],translate,ImguiApp::camera_rot);
-              
             }
 
-            mat4x4_look_at(view[0],eye,center,up);
-            mat4x4_mul(view_tran[0],view[0],traform[0]);
-
-
-            ////////////////////////Projection Matrix ///////////////////////
-            float r_l ;
-            float t_b ;
-            float n_f ;
-
-            if(show_unit_lattice_data)
-            {
-                r_l = distone*0.7f;
-                t_b = distone*0.7f;
-                n_f = distone*3.5f;
-            }
-            else
-            {
-                r_l = dist2*0.7f;
-                t_b = dist2*0.7f;
-                n_f = dist2*3.5f;
-            }
-
-            mat4x4_ortho(proj[0],-(r_l),(r_l),-(t_b),(t_b),-n_f,n_f);
-            proj[0][1][1] *= -1.0f;
+            float3 translate = {(Nxu - 1)/2.0f,(Nyu - 1)/2.0f,(Nzu - 1)/2.0f}; 
+            Camera_settings::set_ZYX_pos(traform[0],translate,ImguiApp::camera_rot);
             
-            if((VulkanBaseApp::shift) && ((view_type == 5) || (view_type == 6)))
+        }
+
+        else
+        {
+            show_unit_lattice_data = false;
+            
+            eye[0] = 0.0f;
+            eye[1] = 0.0f;
+            eye[2] = (dist2*1.2);
+            
+            if(ImGui::IsKeyDown(ImGuiKey_LeftShift))
+            {
+                ImguiApp::mouse_view = true;
+                ImguiApp::view_settings = false;
+                ImguiApp::view_3dcam = false;
+                
+                if((ImGui::IsMouseDown(ImGuiMouseButton_Left)))
+                {
+                    ImVec2 delta_mouse = ImGui::GetMouseDragDelta(0) ;
+                    int x_val = ImguiApp::mouse_rot.x + delta_mouse.y;
+                    int y_val = ImguiApp::mouse_rot.y + delta_mouse.x;
+                    ImguiApp::camera_rot.x = (x_val) * 0.001f;
+                    ImguiApp::camera_rot.y = (y_val) * 0.001f;
+
+                }
+                else if(ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+                {
+                
+                    ImguiApp::mouse_rot.x = ImguiApp::camera_rot.x * 1000.0f;
+                    ImguiApp::mouse_rot.y = ImguiApp::camera_rot.y * 1000.0f;
+                    
+                }
+
+            }
+
+            if(!ImguiApp::mouse_view)
+            {
+                
+                if(VulkanBaseApp::shift)
+                {
+                    Camera_settings::rotate_plane(angle,ImguiApp::view_type,&ImguiApp::camera_rot);
+
+                    angle += ImguiApp::increment_angle;
+
+                    if((view_type == 5) || (view_type == 6))
+                    {
+                        eye[0] = dist2 * 1.2f;
+                        eye[1] = 0.0f;
+                        eye[2] = 0.0f;
+                    }
+                }
+                else
+                {
+                    if(ImguiApp::view_type != 0)
+                    {
+                        Camera_settings::camera_view(&ImguiApp::camera_rot,ImguiApp::view_type);
+                    }
+                }
+
+            }
+
+            float3 translate = {(NumX - 1)/2.0f,(NumY - 1)/2.0f,(NumZ - 1)/2.0f}; 
+
+            Camera_settings::set_ZYX_pos(traform[0],translate,ImguiApp::camera_rot);
+            
+        }
+
+        mat4x4_look_at(view[0],eye,center,up);
+        mat4x4_mul(view_tran[0],view[0],traform[0]);
+
+
+        ////////////////////////Projection Matrix ///////////////////////
+        float r_l ;
+        float t_b ;
+        float n_f ;
+
+        if(show_unit_lattice_data)
+        {
+            r_l = distone*0.7f;
+            t_b = distone*0.7f;
+            n_f = distone*3.5f;
+
+        }
+        else
+        {
+            r_l = dist2*0.7f;
+            t_b = dist2*0.7f;
+            n_f = dist2*3.5f;
+        }
+
+        mat4x4_ortho(proj[0],-(r_l),(r_l),-(t_b),(t_b),-n_f,n_f);
+        proj[0][1][1] *= -1.0f;
+
+
+        if((VulkanBaseApp::shift) && ((view_type == 5) || (view_type == 6)))
+        {
+            
+            if(ImguiApp::show_unit_lattice_data)
+            {
+                light_dir[0] = 1.0f *(distone*1.2f);
+            }
+            else
             {
                 light_dir[0] = 1.0f *(dist2*1.2f);
-                light_dir[1] = 0.0f;
-                light_dir[2] = 0.0f;
-                light_dir[3] = 0.0f;
             }
             
+            light_dir[1] = 0.0f;
+            light_dir[2] = 0.0f;
+            light_dir[3] = 0.0f;
+        }
+        
+        else
+        {
+            light_dir[0] = 0.0f;
+            light_dir[1] = 0.0f;
+
+            if(ImguiApp::show_unit_lattice_data)
+            {
+                light_dir[2] = 1.0f *(distone*1.2f);
+            }
             else
             {
-                light_dir[0] = 0.0f;
-                light_dir[1] = 0.0f;
                 light_dir[2] = 1.0f *(dist2*1.2f);
-                light_dir[3] = 0.0f;
             }
-            float3 rot_light = -1.0f * ImguiApp::camera_rot;
-            float3 tran = {0.0f, 0.0f , 0.0f};
-            vec4 l_two = {0.0f,0.0f,0.0f,0.0f};
-            Camera_settings::set_ZYX_pos(traform[0],tran,rot_light);
-            mat4x4_mul_vec4(l_two,traform[0],light_dir);
-        
-            push_constants.eyes[0] = l_two[0];
-            push_constants.eyes[1] = l_two[1];
-            push_constants.eyes[2] = l_two[2];
-            push_constants.eyes[3] = 0.0f;
-
-
-            Inst_push_constants.eyes[0] = l_two[0];
-            Inst_push_constants.eyes[1] = l_two[1];
-            Inst_push_constants.eyes[2] = l_two[2];
-            Inst_push_constants.eyes[3] = 0.0f;
-
-            /////////////////////////////////////////////////////////////////////////////
-           
-            mat4x4_mul(ubo.modelViewProj[0], proj[0], view_tran[0]);
+            
+            light_dir[3] = 0.0f;
         }
-      
+        float3 rot_light = -1.0f * ImguiApp::camera_rot;
+        float3 tran = {0.0f, 0.0f , 0.0f};
+        vec4 l_two = {0.0f,0.0f,0.0f,0.0f};
+        Camera_settings::set_ZYX_pos(traform[0],tran,rot_light);
+        mat4x4_mul_vec4(l_two,traform[0],light_dir);
+    
+        push_constants.eyes[0] = l_two[0];
+        push_constants.eyes[1] = l_two[1];
+        push_constants.eyes[2] = l_two[2];
+        push_constants.eyes[3] = 0.0f;
+
+
+        Inst_push_constants.eyes[0] = l_two[0];
+        Inst_push_constants.eyes[1] = l_two[1];
+        Inst_push_constants.eyes[2] = l_two[2];
+        Inst_push_constants.eyes[3] = 0.0f;
+
+        /////////////////////////////////////////////////////////////////////////////
+        
+        mat4x4_mul(ubo.modelViewProj[0], proj[0], view_tran[0]);
+    
         void *data;
         vkMapMemory(device, uniformMemory[imageIndex], 0, getUniformSize(), 0, &data);
         memcpy(data, &ubo, sizeof(ubo));
@@ -2834,6 +2942,8 @@ class Multitopo : public VulkanBaseApp, Modelling
         dz = 1.0;
         
         dist2 = (MAX(NumZ,MAX(NumX,NumY)));
+
+        distone = (MAX(Nxu,MAX(Nyu,Nzu)));
         
         maxmemverts = max((NumX*NumY*NumZ*4),300000);
 

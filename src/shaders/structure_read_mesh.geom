@@ -41,6 +41,7 @@ layout( push_constant, std430) uniform push_constants
         int show_domain;
         int show_analysis;
         ivec2 mouse_delta;
+        int mesh_color;
 
 } ;
 
@@ -115,54 +116,59 @@ void main(void)
                 
                 gl_Position = proj_pos;
 
-
-                if(show_analysis == 0)
-                {
-                    if((make_region > 0) || (show_domain > 0) )
-                    {
-                        if(norm[i].w == 0.25)
-                        {
-                            
-                            fragColor = vec4(lightcolor4*amg,norm[i].w);
-                        }
-                        else if (norm[i].w == 0.5)
-                        {
-                    
-                            fragColor = vec4(lightcolor3*amg,norm[i].w);
-                        }
-                        else
-                        {
-                            fragColor = vec4(lightcolor2*amg,norm[i].w);
-                        }
-                    }
-                    else if(show_region > 0)
-                    {
-                        fragColor = vec4(lightcolor4*amg,norm[i].w);
-                    }
-               
-    
-                    else
-                    {
-                        fragColor = vec4(lightcolor1*amg,norm[i].w);
-                    }
-
-                    if(val[prim_id] == 1)
-                    {
-                        fragColor = vec4(1.0,0.0,0.0,1.0);
-                    }
-
-                    if(val[prim_id] == -1)
-                    {
-                        fragColor = vec4(1.0,1.0,0.0,1.0);
-                    }
-                }
-
-                if(show_analysis > 0)
+                if(mesh_color > 0)
                 {
                     fragColor = vec4(spectral_jet(coll).xyz*amg, 1.0);
                 }
+                else
+                {
+                    if(show_analysis == 0)
+                    {
+                        if((make_region > 0) || (show_domain > 0) )
+                        {
+                            if(norm[i].w == 0.25)
+                            {
+                                
+                                fragColor = vec4(lightcolor4*amg,norm[i].w);
+                            }
+                            else if (norm[i].w == 0.5)
+                            {
+                        
+                                fragColor = vec4(lightcolor3*amg,norm[i].w);
+                            }
+                            else
+                            {
+                                fragColor = vec4(lightcolor2*amg,norm[i].w);
+                            }
+                        }
+                        else if(show_region > 0)
+                        {
+                            fragColor = vec4(lightcolor4*amg,norm[i].w);
+                        }
+                
+        
+                        else
+                        {
+                            fragColor = vec4(lightcolor1*amg,norm[i].w);
+                        }
 
+                        if(val[prim_id] == 1)
+                        {
+                            fragColor = vec4(1.0,0.0,0.0,1.0);
+                        }
 
+                        if(val[prim_id] == -1)
+                        {
+                            fragColor = vec4(1.0,1.0,0.0,1.0);
+                        }
+                    }
+
+                    if(show_analysis > 0)
+                    {
+                        fragColor = vec4(spectral_jet(coll).xyz*amg, 1.0);
+                    }
+
+                }
 
                 gl_PointSize =float(2);
 

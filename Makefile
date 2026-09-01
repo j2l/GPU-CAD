@@ -245,6 +245,7 @@ run: build
 
 clean:
 	rm -f src/shaders/*.spv
+	rm -f src/shaders/*/*.spv
 
 	@if [ -d "$(BUILDDIR)" ]; then \
 	echo "Removing  '$(BUILDDIR)' folder "; \

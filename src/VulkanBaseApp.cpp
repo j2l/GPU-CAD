@@ -63,9 +63,13 @@ struct {
  
     VkPipeline graphicsPipeline;
     VkPipeline graphicsPipelineread;
+    VkPipeline graphicsPipeline_ulattice;
+    VkPipeline graphicsPipelineread_ulattice;
     VkPipeline graphicsPipelineread_region;
     VkPipeline graphicsPipelineone;
     VkPipeline graphicsPipelineoneread;
+    VkPipeline graphicsPipelineone_ulattice;
+    VkPipeline graphicsPipelineoneread_ulattice;
     VkPipeline graphicsPipelineInstance;
     VkPipeline graphicsPipelineInstanceread;
     
@@ -111,6 +115,10 @@ VulkanBaseApp::VulkanBaseApp(const std::string& appName, bool enableValidation) 
     shaderFilesread(),
     shaderFilesone(),
     shaderFilesoneread(),
+    shaderFiles_grid_ulattice(),
+    shaderFilesread_grid_ulattice(),
+    shaderFiles_mesh_ulattice(),
+    shaderFilesread_mesh_ulattice(),
     shaderFilesinstance(),
     shaderFilesinstanceread(),
     renderPass(),
@@ -1192,6 +1200,10 @@ void VulkanBaseApp::getVertexDescriptions_instance(std::vector<VkVertexInputBind
 {
 }
 
+void VulkanBaseApp::getVertexDescriptions_u_lattice(std::vector<VkVertexInputBindingDescription>& bindingDesc, std::vector<VkVertexInputAttributeDescription>& attribDesc)
+{
+}
+
 void VulkanBaseApp::createGraphicsPipeline()
 {
     
@@ -1271,8 +1283,7 @@ void VulkanBaseApp::createGraphicsPipeline()
     colorBlending.blendConstants[2] = 0.0f;
     colorBlending.blendConstants[3] = 0.0f;
 
-    colorBlending.attachmentCount = 1;
-    colorBlending.pAttachments = &colorBlendAttachment;
+
 
 
     //////////////////////Dynamic_state///////////////////////////////////////
@@ -1332,6 +1343,37 @@ void VulkanBaseApp::createGraphicsPipeline()
     for (size_t i = 0; i < shaderStageInfos.size(); i++) {
         vkDestroyShaderModule(device, shaderStageInfos[i].module, nullptr);
     }
+
+    //////////////////////////////////////////shaderFiles_ulattice////////////////////////////////////////////////
+    
+    for (size_t i = 0; i < shaderFiles_grid_ulattice.size(); i++) {
+
+        shaderStageInfos[i].module = createShaderModule(device, shaderFiles_grid_ulattice[i].second.c_str());
+
+    }
+
+
+    std::vector<VkVertexInputBindingDescription> vertexBindingDescriptions_ulattice;
+    std::vector<VkVertexInputAttributeDescription> vertexAttributeDescriptions_ulattice;
+    getVertexDescriptions_u_lattice(vertexBindingDescriptions_ulattice, vertexAttributeDescriptions_ulattice);
+
+    vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+    vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(vertexBindingDescriptions_ulattice.size());
+    vertexInputInfo.pVertexBindingDescriptions = vertexBindingDescriptions_ulattice.data();
+    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(vertexAttributeDescriptions_ulattice.size());
+    vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions_ulattice.data();
+
+
+    if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipelines.graphicsPipeline_ulattice) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create graphics pipeline ulattice!");
+    }
+
+    for (size_t i = 0; i < shaderStageInfos.size(); i++) {
+        vkDestroyShaderModule(device, shaderStageInfos[i].module, nullptr);
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     
 
     //////////////////////////////////////////shaderFilesone////////////////////////////////////////////////
@@ -1341,8 +1383,6 @@ void VulkanBaseApp::createGraphicsPipeline()
         shaderStageInfos[i].module = createShaderModule(device, shaderFilesone[i].second.c_str());
 
     }
-
-
 
 
     VkPipelineColorBlendAttachmentState colorBlendAttachmentone{};
@@ -1387,6 +1427,38 @@ void VulkanBaseApp::createGraphicsPipeline()
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////shaderFiles_mesh_ulattice////////////////////////////////////////////////
+    
+    for (size_t i = 0; i < shaderFiles_mesh_ulattice.size(); i++) {
+
+        shaderStageInfos[i].module = createShaderModule(device, shaderFiles_mesh_ulattice[i].second.c_str());
+
+    }
+
+
+    vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+    vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(vertexBindingDescriptionsone.size());
+    vertexInputInfo.pVertexBindingDescriptions = vertexBindingDescriptionsone.data();
+    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(vertexAttributeDescriptionsone.size());
+    vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptionsone.data();
+
+    rasterizer.lineWidth = 1.0f;
+    rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+
+
+    if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipelines.graphicsPipelineone_ulattice) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create graphics pipelineone_ulattice!");
+    }
+
+    for (size_t i = 0; i < shaderStageInfos.size(); i++) {
+        vkDestroyShaderModule(device, shaderStageInfos[i].module, nullptr);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     for (size_t i = 0; i < shaderFilesinstance.size(); i++) {
@@ -1491,6 +1563,8 @@ void VulkanBaseApp::createGraphicsPipeline()
         throw std::runtime_error("failed to create graphics pipeline!");
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     VkPipelineColorBlendAttachmentState colorBlendAttachmentregion{};
     colorBlendAttachmentregion.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
     colorBlendAttachmentregion.blendEnable = VK_TRUE;
@@ -1526,8 +1600,48 @@ void VulkanBaseApp::createGraphicsPipeline()
         vkDestroyShaderModule(device, shaderStageInfosread[i].module, nullptr);
     }
 
-    /////////////////////////////////////////shaderFilesoneread////////////////////////////////////////////
+    
+    ///////////////////////////////////////shaderfilesread_grid_ulattice/////////////////////////////
 
+    for (size_t i = 0; i < shaderFilesread_grid_ulattice.size(); i++) {
+
+        shaderStageInfosread[i] = {};
+        shaderStageInfosread[i].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        shaderStageInfosread[i].stage = shaderFilesread_grid_ulattice[i].first;
+        shaderStageInfosread[i].module = createShaderModule(device, shaderFilesread_grid_ulattice[i].second.c_str());
+        shaderStageInfosread[i].pName = "main";
+
+    }
+    getVertexDescriptions_u_lattice(vertexBindingDescriptions_ulattice, vertexAttributeDescriptions_ulattice);
+
+    vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+    vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(vertexBindingDescriptions_ulattice.size());
+    vertexInputInfo.pVertexBindingDescriptions = vertexBindingDescriptions_ulattice.data();
+    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(vertexAttributeDescriptions_ulattice.size());
+    vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions_ulattice.data();
+
+    pipelineInforead.pColorBlendState = &colorBlending;
+
+
+    if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInforead, nullptr, &pipelines.graphicsPipelineread_ulattice) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create graphics pipelineread_ulattice !");
+    }
+
+
+
+    for (size_t i = 0; i < shaderStageInfosread.size(); i++) {
+        vkDestroyShaderModule(device, shaderStageInfosread[i].module, nullptr);
+    }
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////
+    
+    
+    
+    
+    
+    /////////////////////////////////////////shaderFilesoneread////////////////////////////////////////////
     for (size_t i = 0; i < shaderFilesoneread.size(); i++) {
 
         shaderStageInfosread[i].module = createShaderModule(device, shaderFilesoneread[i].second.c_str());
@@ -1562,6 +1676,44 @@ void VulkanBaseApp::createGraphicsPipeline()
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+   /////////////////////////////////////////shaderFiles_mesh_ulattice////////////////////////////////////////////
+
+    for (size_t i = 0; i < shaderFilesread_mesh_ulattice.size(); i++) {
+
+        shaderStageInfosread[i].module = createShaderModule(device, shaderFilesread_mesh_ulattice[i].second.c_str());
+
+    }
+
+    vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+    vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(vertexBindingDescriptionsone.size());
+    vertexInputInfo.pVertexBindingDescriptions = vertexBindingDescriptionsone.data();
+    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(vertexAttributeDescriptionsone.size());
+    vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptionsone.data();
+
+    rasterizer.lineWidth = 1.0f;
+    rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+
+
+    viewportState.viewportCount = 1;
+    viewportState.scissorCount = 1;
+    viewportState.pViewports = &viewports[0];
+    viewportState.pScissors = &scissors[0];
+
+    pipelineInforead.pColorBlendState = &colorBlendingone;
+
+    if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInforead, nullptr, &pipelines.graphicsPipelineoneread_ulattice) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create graphics pipelineoneread_ulattice !");
+    }
+
+    for (size_t i = 0; i < shaderStageInfosread.size(); i++) {
+        vkDestroyShaderModule(device, shaderStageInfosread[i].module, nullptr);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    ////////////////////////////////////////////////////////////////////////////////////
     for (size_t i = 0; i < shaderFilesinstanceread.size(); i++) {
 
         shaderStageInfosread[i].module = createShaderModule(device, shaderFilesinstanceread[i].second.c_str());
@@ -2035,41 +2187,45 @@ void VulkanBaseApp::updatecommandBuffers(VkCommandBuffer commandBuffer, uint32_t
             if(VulkanBaseApp::show_grid)
             {
 
-                vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipeline);
-                vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
                 if(ImguiApp::lattice )
                 {
                     if(ImguiApp::show_unit_lattice_data)
                     {
+                        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipeline_ulattice);
+                        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
                         fillRenderingCommandBuffer_unit_lattice(commandBuffer);
                     }
                     else if( ImguiApp::show_lattice_data)
                     {
+                        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipeline);                        
+                        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
                         fillRenderingCommandBuffer_spatial_lattice(commandBuffer);
                     }
                 }
                 else
                 {
+                    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipeline);
+                    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
                     fillRenderingCommandBuffer(commandBuffer);
                 }
                
             }
 
-             if(VulkanBaseApp::show_mesh)
+            if(VulkanBaseApp::show_mesh)
             {
-        
-                vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipelineone);
-                vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
-           
+
                 if(ImguiApp::lattice || ImguiApp::show_topo_lattice)
                 {
                     if(ImguiApp::show_unit_lattice_data)
                     {
+                        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipelineone_ulattice);
+                        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
                         fillRenderingCommandBufferfour(commandBuffer);
                     }
                     else
                     {
-                        
+                        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipelineone);
+                        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
                         fillRenderingCommandBuffertwo(commandBuffer);
                     }
                 }
@@ -2077,6 +2233,9 @@ void VulkanBaseApp::updatecommandBuffers(VkCommandBuffer commandBuffer, uint32_t
                 else if(ImguiApp::structural || ImguiApp::thermal)
                 {
 
+                    
+                    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipelineone);
+                    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
                     fillRenderingCommandBufferone(commandBuffer);
 
                     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipelineInstance);
@@ -2086,7 +2245,9 @@ void VulkanBaseApp::updatecommandBuffers(VkCommandBuffer commandBuffer, uint32_t
                     
                 }
                 else if((ImguiApp::primitives))
-                {
+                {      
+                    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipelineone);
+                    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
                     fillRenderingCommandBufferthree(commandBuffer);
                 }
 
@@ -2104,25 +2265,30 @@ void VulkanBaseApp::updatecommandBuffers(VkCommandBuffer commandBuffer, uint32_t
             if(VulkanBaseApp::show_mesh)
             {
         
-                vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipelineoneread);
-                vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutread, 0, 1, &descriptorSetsread[currentFrame], 0, nullptr);
-        
+
                 if(ImguiApp::lattice || ImguiApp::show_topo_lattice)
                 {
                     
                     if(ImguiApp::show_unit_lattice_data)
                     {
+                        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipelineoneread_ulattice);
+                        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutread, 0, 1, &descriptorSetsread[currentFrame], 0, nullptr);
                         fillRenderingCommandBufferfour_subpass1(commandBuffer);
+                        
                     }
                     else
                     {
-                    
+                        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipelineoneread);
+                        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutread, 0, 1, &descriptorSetsread[currentFrame], 0, nullptr);
                         fillRenderingCommandBuffertwo_subpass1(commandBuffer);
                     }
                 }
 
                 else if(ImguiApp::structural || ImguiApp::thermal)
                 {
+                    
+                    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipelineoneread);
+                    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutread, 0, 1, &descriptorSetsread[currentFrame], 0, nullptr);
                     fillRenderingCommandBufferone_subpass1(commandBuffer);
                   
                     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipelineInstanceread);
@@ -2133,7 +2299,8 @@ void VulkanBaseApp::updatecommandBuffers(VkCommandBuffer commandBuffer, uint32_t
 
                 else if((ImguiApp::primitives))
                 {
-                    
+                    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipelineoneread);
+                    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutread, 0, 1, &descriptorSetsread[currentFrame], 0, nullptr);
                     fillRenderingCommandBufferthree_subpass1(commandBuffer);
                 }
                 
@@ -2142,39 +2309,43 @@ void VulkanBaseApp::updatecommandBuffers(VkCommandBuffer commandBuffer, uint32_t
             
             if(VulkanBaseApp::show_grid)
             {
-                if(ImguiApp::make_region)
-                {
-                    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipelineread_region);
-                }
-                else
-                {
-                    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipelineread);
-                }
-                
-                vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutread, 0, 1, &descriptorSetsread[currentFrame], 0, nullptr);
 
                 if(ImguiApp::lattice )
                 {
                     if(ImguiApp::show_unit_lattice_data)
                     {
+                        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipelineread_ulattice);
+                        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutread, 0, 1, &descriptorSetsread[currentFrame], 0, nullptr);
                         fillRenderingCommandBuffer_unit_lattice_subpass1(commandBuffer);
+                       
                     }
                     else if( ImguiApp::show_lattice_data)
                     {
+                        
+                        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipelineread);
+                        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutread, 0, 1, &descriptorSetsread[currentFrame], 0, nullptr);
                         fillRenderingCommandBuffer_spatial_lattice_subpass1(commandBuffer);
+                        
                     }
                 }
                 else
                 {
+                    
+                    if(ImguiApp::make_region)
+                    {
+                        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipelineread_region);
+                        
+                    }
+                    else
+                    {
+                        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.graphicsPipelineread);
+                        
+                    }
+                    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutread, 0, 1, &descriptorSetsread[currentFrame], 0, nullptr);
                     fillRenderingCommandBuffer_subpass1(commandBuffer);
                 }
            
-
             }
-
-           
-            
-
         }
 
       
@@ -3454,6 +3625,15 @@ void VulkanBaseApp::cleanupSwapChain()
         vkDestroyPipeline(device, pipelines.graphicsPipelineread, nullptr);
     }
 
+    if (pipelines.graphicsPipeline_ulattice != VK_NULL_HANDLE) {
+        vkDestroyPipeline(device, pipelines.graphicsPipeline_ulattice, nullptr);
+    }
+
+
+    if (pipelines.graphicsPipelineread_ulattice != VK_NULL_HANDLE) {
+        vkDestroyPipeline(device, pipelines.graphicsPipelineread_ulattice, nullptr);
+    }
+
 
     if (pipelines.graphicsPipelineread_region != VK_NULL_HANDLE) {
         vkDestroyPipeline(device, pipelines.graphicsPipelineread_region, nullptr);
@@ -3465,6 +3645,14 @@ void VulkanBaseApp::cleanupSwapChain()
 
     if (pipelines.graphicsPipelineoneread != VK_NULL_HANDLE) {
         vkDestroyPipeline(device, pipelines.graphicsPipelineoneread, nullptr);
+    }
+
+    if (pipelines.graphicsPipelineone_ulattice != VK_NULL_HANDLE) {
+        vkDestroyPipeline(device, pipelines.graphicsPipelineone_ulattice, nullptr);
+    }
+
+    if (pipelines.graphicsPipelineoneread_ulattice != VK_NULL_HANDLE) {
+        vkDestroyPipeline(device, pipelines.graphicsPipelineoneread_ulattice, nullptr);
     }
 
     if (pipelines.graphicsPipelineInstance != VK_NULL_HANDLE) {

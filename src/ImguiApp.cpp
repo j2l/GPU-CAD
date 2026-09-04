@@ -2269,55 +2269,55 @@ void ImguiApp::show_selected_primitive()
         }
 
         
-        // ImGui::NewLine();
-        // ImGui::NewLine();
-        // ImGui::SeparatorText("GENERATE LATTICE");
+        ImGui::NewLine();
+        ImGui::NewLine();
+        ImGui::SeparatorText("GENERATE LATTICE");
         
-        // if(ImGui::Button("FIXED"))
-        // {
+        if(ImGui::Button("FIXED"))
+        {
             
-        //     ImguiApp::primitive_lattice_options = true;
-        //     ImguiApp::lattice_fixed = true;
-        //     ImguiApp::lattice_dynamic = false;
+            ImguiApp::primitive_lattice_options = true;
+            ImguiApp::lattice_fixed = true;
+            ImguiApp::lattice_dynamic = false;
 
-        //     ImguiApp::retain = false;
-        //     ImguiApp::calculate = false;
-        //     ImguiApp::undoo = false;
+            ImguiApp::retain = false;
+            ImguiApp::calculate = false;
+            ImguiApp::undoo = false;
 
-        //     ImguiApp::show_model = true;
-        //     ImguiApp::primitive_done_lattice_do = true;
-        // }
+            ImguiApp::show_model = true;
+            ImguiApp::primitive_done_lattice_do = true;
+        }
 
-        // if(ImGui::Button("DYNAMIC"))
-        // {
+        if(ImGui::Button("DYNAMIC"))
+        {
             
-        //     ImguiApp::primitive_lattice_options = true;
-        //     ImguiApp::lattice_fixed = false;
-        //     ImguiApp::lattice_dynamic = true;
+            ImguiApp::primitive_lattice_options = true;
+            ImguiApp::lattice_fixed = false;
+            ImguiApp::lattice_dynamic = true;
 
-        //     ImguiApp::calculate = false;
-        //     ImguiApp::retain = false;
-        //     ImguiApp::undoo = false;
+            ImguiApp::calculate = false;
+            ImguiApp::retain = false;
+            ImguiApp::undoo = false;
 
-        //     ImguiApp::show_model = true;
-        //     ImguiApp::primitive_done_lattice_do = true;
-        // }
+            ImguiApp::show_model = true;
+            ImguiApp::primitive_done_lattice_do = true;
+        }
 
-        // if(ImGui::Button("NONE"))
-        // {
-        //     ImguiApp::primitive_lattice_options = false;
-        //     ImguiApp::lattice_fixed = false;
-        //     ImguiApp::lattice_dynamic = false;
+        if(ImGui::Button("NONE"))
+        {
+            ImguiApp::primitive_lattice_options = false;
+            ImguiApp::lattice_fixed = false;
+            ImguiApp::lattice_dynamic = false;
 
-        //     ImguiApp::calculate = true;
-        //     ImguiApp::retain = false;
-        //     ImguiApp::undoo = false;
+            ImguiApp::calculate = true;
+            ImguiApp::retain = false;
+            ImguiApp::undoo = false;
             
-        //     ImguiApp::show_model = true;
-        //     ImguiApp::show_primitive_lattice = false;
+            ImguiApp::show_model = true;
+            ImguiApp::show_primitive_lattice = false;
             
-        //     ImguiApp::primitive_done_lattice_do = false;
-        // }
+            ImguiApp::primitive_done_lattice_do = false;
+        }
             
         
     }

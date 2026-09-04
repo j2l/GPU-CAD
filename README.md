@@ -1,5 +1,7 @@
-# GPUCADforAM    
-![Mulitple Loads Demo](https://github.com/DESIGN4ADDITIVE/GPUCADforAM/blob/main/Outputs/Multiple_loads.gif "GPUCADforAM")
+# GPUCADforAM   
+
+![Lattice Analysis Demo](https://github.com/DESIGN4ADDITIVE/GPUCADforAM/blob/main/Outputs/Lattice_Analysis.gif "GPUCADforAM")
+   
 
 This software application helps you in creating implicit CAD models (currently primitves), topology optimised structure (currently structural and thermal ) , lattice structures that can rotate, bend and change its size and shape spatially and export the data in '.obj' format.
 
